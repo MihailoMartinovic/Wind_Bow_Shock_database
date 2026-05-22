@@ -1,0 +1,72 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Virtual environments
+venv/
+venv-*/
+env/
+ENV/
+.venv
+.env
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# tmp files
+scripts/*.py~
+*.py~
+
+# Data
+data/
+*.cdf
+*.h5
+*.nc
+*.dat
+*.txt~
+
+# Generated figures & output
+figs/
+figs_wind/
+figs_wind_selected/
+movies/
+*.png
+*.pdf
+*.html
+Untitled*.ipynb
+
+# OS
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# Local environment file
+.env.local
+.env.*.local

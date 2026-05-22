@@ -1,0 +1,44 @@
+some passes quantitatively disagree with model
+08 out
+09 out
+10 out
+11 in
+15 out
+19 out
+20 out
+22 out
+24 out
+26 in
+26 out
+58 out
+63 out
+
+problematic passes
+
+09 in - cannot render
+12 in
+47 in
+48 in
+
+not rendering final dot properly
+07 in
+45 in
+
+
+plot range extended
+34 out
+42 out
+43 out
+44 out
+45 out
+52 out
+55 in
+55 out
+56 in
+60 out
+68 in
+68 out
+69 in
+69 out
+70 in
+70 out
