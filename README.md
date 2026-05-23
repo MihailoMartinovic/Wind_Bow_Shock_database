@@ -1,3 +1,23 @@
+# Wind Bow Shock Database: Data repository 
+
+This repository inclues the files from 69 passes of Wind through Earth's bow shock. 
+
+The **pass** is defined as the trajectory of the spacecraft over the theoretical bow shock zone. Each pass can contain one  or more crossings. Pass can be inward or outward. 
+
+Crossing is the point in time when the spacecraft crosses the shock. 
+
+The database is given in the **database_files/** folder, containing: 
+
+ - Excel file with all the crossings 
+ - h5 file of the same content 
+ - two visualization files that contain the GSE visualization of all crossings
+
+Individial files are shown in two folders:
+
+ - **figs_data** provides the figures of all data products for each pass with crossing times marked
+ - **figs_html** provides interactive visualizations 
+
+
 # Wind Bow Shock Database: Magnetosphere Visualization with Wind Spacecraft Data
 
 A Python-based tool for visualizing magnetosphere boundaries (magnetopause and bow shock) using Wind spacecraft magnetic field and solar wind measurements. Combines real satellite data with magnetosphere models (T96, Shue 1998) to create interactive 3D visualizations of magnetospheric structure during magnetosphere-solar wind crossings.
