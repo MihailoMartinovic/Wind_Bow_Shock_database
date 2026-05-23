@@ -51,14 +51,14 @@ data/
 *.dat
 *.txt~
 
-# Generated figures & output
-figs/
-figs_wind/
-figs_wind_selected/
-movies/
-*.png
-*.pdf
-*.html
+# Generated figures & output (uncomment to ignore)
+# figs/
+# figs_wind/
+# figs_wind_selected/
+# movies/
+# *.png
+# *.pdf
+# *.html
 Untitled*.ipynb
 
 # OS
