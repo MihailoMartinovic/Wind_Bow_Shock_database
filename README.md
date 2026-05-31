@@ -1,21 +1,21 @@
-# Wind Bow Shock Database: Data repository 
+# Wind Bow Shock Database: Data Repository
 
-This repository inclues the files from 69 passes of Wind through Earth's bow shock. 
+This repository contains data from 69 passes of the Wind spacecraft through Earth's bow shock.
 
-The **pass** is defined as the trajectory of the spacecraft over the theoretical bow shock zone. Each pass can contain one  or more crossings. Pass can be inward or outward. 
+A **pass** is defined as the portion of the spacecraft trajectory that traverses the theoretical bow shock region. Each pass may contain one or more bow shock crossings. Passes are classified as either **inbound** or **outbound**.
 
-Crossing is the point in time when the spacecraft crosses the shock. 
+A **crossing** is the moment in time when the spacecraft crosses the bow shock.
 
-The database is given in the **database_files/** folder, containing: 
+The database is provided in the **database_files/** directory and includes:
 
- - Excel file with all the crossings 
- - h5 file of the same content 
- - two visualization files that contain the GSE visualization of all crossings
+- An Excel file containing all identified crossings
+- An HDF5 (`.h5`) file containing the same information
+- Four visualization files showing all crossings in GSE coordinates
 
-Individial files are shown in two folders:
+Additional files are organized into two directories:
 
- - **figs_data** provides the figures of all data products for each pass with crossing times marked
- - **figs_html** provides interactive visualizations 
+- **figs_data/** contains plots of all data products for each pass, with crossing times marked.
+- **figs_html/** contains interactive visualizations of each pass.
 
 
 # Wind Bow Shock Database: Magnetosphere Visualization with Wind Spacecraft Data
