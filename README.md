@@ -1,34 +1,29 @@
-# Wind Bow Shock Database: Data Repository
-
-This repository contains data from 69 passes of the Wind spacecraft through Earth's bow shock.
-
-A **pass** is defined as the portion of the spacecraft trajectory that traverses the theoretical bow shock region. Each pass may contain one or more bow shock crossings. Passes are classified as either **inbound** or **outbound**.
-
-A **crossing** is the moment in time when the spacecraft crosses the bow shock.
-
-The database is provided in the **database_files/** directory and includes:
-
-- An Excel file containing all identified crossings
-- An HDF5 (`.h5`) file containing the same information
-- Four visualization files showing all crossings in GSE coordinates
-
-Additional files are organized into two directories:
-
-- **figs_data/** contains plots of all data products for each pass, with crossing times marked.
-- **figs_html/** contains interactive visualizations of each pass.
-
-
 # Wind Bow Shock Database: Magnetosphere Visualization with Wind Spacecraft Data
 
-A Python-based tool for visualizing magnetosphere boundaries (magnetopause and bow shock) using Wind spacecraft magnetic field and solar wind measurements. Combines real satellite data with magnetosphere models (T96, Shue 1998) to create interactive 3D visualizations of magnetospheric structure during magnetosphere-solar wind crossings.
+A Python-based tool for visualizing magnetosphere boundaries (magnetopause and bow shock) using Wind spacecraft passes through Earth's bow shock. The repository contains **635 bow shock crossings** across **70 passes** spanning August 1995 to April 2004. Interactive 3D visualizations combine real satellite data with magnetosphere models (T96, Shue 1998) to show magnetospheric structure during Wind's crossings.
+
+## Database Overview
+
+- **635 individual crossings** identified across 70 passes of the Wind spacecraft
+- **Temporal Range**: 1995-08 to 2004-04 (~9 years of observations)
+- **Pass Classification**: Each pass is either inbound or outbound through the bow shock region
+- **Data Sources**: OMNI2 hourly solar wind/IMF data, NOAA Dst index, T96 magnetosphere model with IGRF field
+
+**Key files**:
+- `pass_parameters_v2.csv` — Provenance record for all 140 pass legs (includes 3 skipped legs with incomplete OMNI data)
+- `database_files/` — Crossing database in Excel and HDF5 formats
+- `figs/` — Data product plots for each pass with crossing markers  
+- `figs_deprecated/` — Previous-generation renderings (kept for comparison)
 
 ## Features
 
-- **Wind Spacecraft Data Integration**: Fetches MFI (magnetic field) and SWE (solar wind) measurements from CDAWEB
-- **Dynamic Magnetosphere Modeling**: Uses T96 field model with Shue 1998 magnetopause and Mach number-dependent bow shock
-- **Interactive 3D Visualization**: Plotly-based interactive plots with spacecraft trajectory, field lines, and boundaries
-- **Batch Processing**: Process multiple magnetosphere crossings automatically
-- **Database-Driven**: Built-in bow shock crossing database with timing windows
+- **OMNI2 Upstream Parameters**: All 137 rendered passes use OMNI2 hourly solar wind/IMF data (single, consistent data source)
+- **Shue 1998 Magnetopause Model**: Dynamic standoff distance computed from solar wind pressure and Bz
+- **Gas-Dynamic Bow Shock**: Alfvén Mach number-dependent standoff with 0.9-eccentricity conic profile
+- **Interactive 3D Visualization**: Plotly-based HTML renderings with spacecraft trajectory, magnetic field lines, and boundary surfaces
+- **T96 Field Lines**: 96 field lines traced via geopack T96 model in both directions (rlim = 60 R⊕)
+- **Batch Processing**: Resumable notebook (`render_passes_v2.ipynb`) processes all passes, skipping completed renderings
+- **Complete Provenance**: `pass_parameters_v2.csv` documents all upstream parameters, model inputs, and computation metadata
 
 ## Installation
 
@@ -92,59 +87,89 @@ crossing = db.get_crossings_for_pass(pass_id)[0]
 
 ```
 Wind_Bow_Shock_database/
-├── MagCarto_Master.ipynb        # Main Jupyter notebook with all functionality
-├── bs_crossings_loader.py       # Crossing database access module
-├── requirements.txt             # Python package dependencies
-├── README.md                    # This file
-├── .gitignore                   # Git ignore patterns
-├── scripts/                     # Standalone utility scripts
+├── MagCarto_Master.ipynb          # Main Jupyter notebook with interactive widget interface
+├── render_passes_v2.ipynb         # Generator for 137 interactive HTML renderings
+├── build_omni2_cache.ipynb        # Builds OMNI2 cache from D:\Data\OMNI\omni2_cache.pkl
+├── bs_crossings_loader.py         # Crossing database access module
+├── pass_parameters_v2.csv         # Provenance record: 140 rows (137 rendered + 3 skipped)
+├── requirements.txt               # Python package dependencies
+├── README.md                      # This file
+├── BS_CROSSINGS_DATABASE.md       # Data schema and methodology documentation
+├── .gitignore                     # Git ignore patterns
+├── scripts/                       # Standalone utility scripts
 │   ├── magnetosphere_wind_plot.py
 │   ├── magnetosphere_wind_batch.py
-│   ├── magnetosphere_hs_plot.py
-│   ├── magnetosphere_hs_batch.py
 │   └── ...
-├── figs/                        # Output figures (generated, not tracked)
-├── figs_wind/                   # Wind-derived figures (generated, not tracked)
-└── data/                        # Local data cache (not tracked)
+├── database_files/                # Crossing database (Excel, HDF5, visualization data)
+├── figs/                          # 137 data product plots with crossing markers
+├── figs_deprecated/               # Previous-generation renderings (v1.0.0)
+└── data/                          # Local data cache (not tracked)
 ```
 
 ## Usage
 
-### Processing a Single Crossing
+### Interactive Visualization (MagCarto_Master.ipynb)
 
-The notebook cell `PASS_DIRECTION_3D_PLOTLY` processes a single magnetosphere crossing:
+Run the main notebook to select and visualize individual bow shock crossings:
 
-```python
-# Select pass and direction interactively
-# Crossing time is extracted automatically
-# Wind MFI and SWE data are fetched from cached CDF files
-# 3D visualization is generated showing:
-# - Wind spacecraft trajectory (blue line)
-# - Magnetopause surface (yellow mesh)
-# - Bow shock surface (cyan surface)
-# - Magnetic field lines (colored by magnitude)
+```bash
+jupyter notebook MagCarto_Master.ipynb
 ```
 
-### Batch Processing Multiple Crossings
+Features:
+- **Pass Selection Widget**: Choose pass number and direction (inbound/outbound)
+- **Parameter Display**: Shows upstream OMNI2 parameters, model inputs, and boundary locations
+- **3D Interactive Plot**: Rotate, zoom, and pan to explore magnetosphere boundaries and spacecraft trajectory
+- **Export**: Save rendered HTML for sharing
 
-The `BATCH_WIND_CORRECTED` cell processes all 18 Wind-derived passes:
+### Batch Processing (render_passes_v2.ipynb)
 
-```python
-# Automatically:
-# - Loads crossing database
-# - Maps CDF files to crossing times
-# - Extracts Pdyn, Dst, Bz, By, Ma parameters
-# - Generates HTML visualizations
-# - Saves to figs_wind/ directory
-# - Tracks successes and failures
+Generate all 137 interactive renderings (takes ~4 hours):
+
+```bash
+jupyter notebook render_passes_v2.ipynb
 ```
+
+The notebook:
+- Reads OMNI2 data from cached pickle file (build with `build_omni2_cache.ipynb` if missing)
+- Processes 140 pass legs, skipping 3 with incomplete OMNI data
+- Generates one HTML file per leg in `figs/`
+- Resumes from last completed leg if interrupted
+- Logs provenance to `pass_parameters_v2.csv`
+
+## Magnetosphere Models
+
+### Magnetopause (Shue et al. 1998)
+The magnetopause standoff distance and shape are computed from solar wind dynamic pressure and Bz:
+
+```
+r₀ = (10.22 + 1.29 × tanh(0.184 × (Bz + 8.14))) × Pdyn^(-1/6.6)
+α = (0.58 - 0.007 × Bz) × (1 + 0.024 × ln(Pdyn))
+r(θ) = r₀ × (2 / (1 + cos(θ)))^α
+```
+
+### Bow Shock (Gas-Dynamic Standoff)
+The bow shock is a conic section (eccentricity e = 0.9) with subsolar distance determined by the magnetopause nose plus gas-dynamic standoff:
+
+```
+Δ = r₀ × ((γ - 1) × M_A² + 2) / ((γ + 1) × (M_A² - 1)),  γ = 5/3
+r_bs0 = r₀ + Δ
+r(θ) = r_bs0 × (1 + e) / (1 + e × cos(θ))
+```
+
+**Important**: The Mach number used is the **Alfvén Mach number (M_A)**, not the magnetosonic Mach number.
+
+### Field Lines
+96 field lines are traced using the T96 magnetosphere model with IGRF magnetic field coefficients, traced in both directions from each seed with a radial limit of 60 R⊕.
+
+**All surfaces are axisymmetric** about the GSM x-axis (no aberration, dawn-dusk asymmetry, or dipole tilt effects).
 
 ## Data Sources
 
-- **Wind Spacecraft Data**: CDAWEB (wi_h1_mfi_*.cdf, wi_h1_swe_*.cdf)
-- **Disturbance Storm Time**: NOAA Space Weather Prediction Center (dst*.txt)
-- **Magnetosphere Model Parameters**: T96 model with IGRF magnetic field
-- **Crossing Database**: bs_crossings_loader.load_crossings()
+- **OMNI2 Hourly Data**: Solar wind velocity, dynamic pressure (Pdyn), IMF components (Bz, By)
+- **NOAA Dst Index**: Disturbance Storm Time index for magnetospheric activity
+- **Magnetosphere Models**: T96 (Tsyganenko 1996) field model with IGRF coefficients
+- **Crossing Database**: Wind bow shock crossing times from `bs_crossings_loader.py`
 
 ## Key Dependencies
 
@@ -160,20 +185,28 @@ The `BATCH_WIND_CORRECTED` cell processes all 18 Wind-derived passes:
 
 ## Configuration
 
-### Wind Data Location
+### OMNI2 Cache Location
 
-Edit the data path in the notebook cells:
+The batch renderer uses OMNI2 hourly data cached locally:
 ```python
-data_dir = r"D:\Data\Wind\bow_shock\data_used"  # Update to your Wind CDF files location
+omni_cache = r"D:\Data\OMNI\omni2_cache.pkl"  # Must be built once with build_omni2_cache.ipynb
 ```
 
-### Time Tolerances
+### Parameter Search Window
 
-For Wind data extraction with time gaps:
+For each pass leg, the generator finds the nearest OMNI2 hour within ±4 hours of the first crossing at which all five parameters (Pdyn, Bz, By, Dst, M_A) are present. This window can be adjusted in `render_passes_v2.ipynb`:
+
 ```python
-mfi_tolerance = 21600   # ±6 hours for MFI data
-swe_tolerance = 21600   # ±6 hours for SWE data
+MAX_OFFSET_H = 4.0  # Hours before/after first crossing
 ```
+
+### Alfvén Mach Number Guard
+
+Legs with M_A < 1.2 are considered unreliable (gas-dynamic relation diverges as M_A → 1):
+```python
+MIN_MACH = 1.2
+```
+Currently, 137 of 140 legs meet this criterion.
 
 ## Output
 
@@ -183,24 +216,33 @@ Visualizations are saved as interactive HTML files:
 
 ## Troubleshooting
 
-### Missing CDF Files
+### Missing OMNI2 Cache
 
-If Wind data is unavailable for a crossing:
-1. Check CDAWEB for wi_h1_mfi_*.cdf and wi_h1_swe_*.cdf files
-2. Download files and place in the configured data directory
-3. Ensure filename format: `mfi_YYYY_YYYYMMDD_vXX.cdf`
+If `render_passes_v2.ipynb` fails to find OMNI2 data:
+1. Run `build_omni2_cache.ipynb` to fetch and cache OMNI2 hourly data
+2. Ensure `D:\Data\OMNI\omni2_cache.pkl` is created and readable
+3. Check spacepy is installed: `python -c "import spacepy.omni"`
+
+### Incomplete Legs
+
+Three legs lack complete OMNI2 data within the ±4 h search window:
+- Pass 4 inbound (1995-11-28 08:40 UTC): 3 crossings skipped
+- Pass 55 inbound (2001-02-20 02:45 UTC): 1 crossing skipped
+- Pass 56 inbound (2001-09-08 12:05 UTC): 7 crossings skipped
+
+These are logged as `status = "skipped: no complete OMNI hour within 4.0 h"` in `pass_parameters_v2.csv`.
 
 ### Import Errors
 
 Ensure all dependencies are installed:
 ```bash
 pip install -r requirements.txt
-python -c "import spacepy; import geopack; import sscws"
+python -c "import spacepy; import geopack; import plotly"
 ```
 
-### Jupyter Notebook Issues
+### Notebook Checkpoint Issues
 
-Clear notebook checkpoints and restart:
+Clear old checkpoints and restart kernel:
 ```bash
 rm -rf .ipynb_checkpoints
 jupyter kernel restart
@@ -228,8 +270,22 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## References
 
-- Tsyganenko, N. A. (1996), Modeling the Earth's magnetospheric magnetic field confined within a realistic magnetopause, J. Geophys. Res., 101, 27187–27198.
+- Farris, M. H., and C. T. Russell (1994), Bow shock and magnetosheath dynamic pressure variations relative to the solar wind dynamic pressure, J. Geophys. Res., 99, 17681–17689.
+  - Gas-dynamic standoff relation (evaluated with Alfvén Mach number)
 - Shue, J. H., et al. (1998), Magnetopause location under extreme solar wind conditions, J. Geophys. Res., 103, 17691–17700.
+  - Shue et al. magnetopause model (Eqs. 10–11)
+- Tsyganenko, N. A. (1996), Modeling the Earth's magnetospheric magnetic field confined within a realistic magnetopause, J. Geophys. Res., 101, 27187–27198.
+  - T96 magnetosphere field model
+
+## Known Issues and Limitations
+
+- **Pass 47 inbound** (M_A = 1.40) renders with artificially large standoff distance (Δ = 16.85 R⊕) due to near-divergence of the gas-dynamic relation. Model surfaces are annotated as unreliable for this leg.
+- **Axisymmetric model**: No aberration from Earth's orbital motion, no dawn-dusk asymmetry, no dipole-tilt dependence.
+- **Skipped legs**: Three pass legs lack complete OMNI2 data and are not rendered (see Troubleshooting).
+
+## Documentation
+
+For detailed information on the crossing database schema, data processing pipeline, and parameter sources, see **BS_CROSSINGS_DATABASE.md**.
 
 ## Contact
 
