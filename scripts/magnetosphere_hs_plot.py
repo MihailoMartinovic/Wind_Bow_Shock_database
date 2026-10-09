@@ -1216,7 +1216,7 @@ def get_hs_ephemeris_window(hs_dir, t_hs_center, t_drv, window_days=2.0, cadence
     return times, pos_gse, pos_gsm
 
 if __name__ == "__main__":
-    hs_dir = "/home/kgklein/Codes/HS-RT/PhB_SRD5B_0x75b"
+    hs_dir = os.environ.get("HS_RT_DIR", "HS-RT/PhB_SRD5B_0x75b")   # set HS_RT_DIR to the HS-RT run folder
 
     load_spice_kernels(kernel_dir="data/spice")
     # User-chosen solar wind / magnetosphere driver time (must be within OMNI2 coverage)

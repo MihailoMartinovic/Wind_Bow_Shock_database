@@ -1,0 +1,7 @@
+{
+  "_about": "Copy this file to local_paths.json in the folder you run the notebooks from, and fill in your own locations. local_paths.json is not part of the repository.",
+  "bow_shock": "folder that holds bs_crossings_V02.xlsx, MagCarto/, Bow_Shock_Stats/, Figures/ and this repository",
+  "omni_cache": "path to omni2_cache.pkl, written by build_omni2_cache.ipynb",
+  "wind_data": "folder with the Wind MFI and SWE CDF files (MagCarto_Master.ipynb only)",
+  "overleaf": "optional: folder of the paper's LaTeX project, if figures are to be written straight into it"
+}

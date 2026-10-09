@@ -17,7 +17,7 @@ Be respectful and inclusive. We welcome contributions from people of all backgro
 3. **Create a virtual environment**:
    ```bash
    python3 -m venv venv-magnetosphere
-   source venv-magnetosphere/bin/activate
+   source venv-magnetosphere/bin/activate   # Windows: venv-magnetosphere\Scripts\activate
    ```
 4. **Install development dependencies**:
    ```bash
@@ -66,6 +66,20 @@ Short summary (50 characters or less)
 Detailed explanation if needed. Wrap at 72 characters.
 Reference issues with "Fixes #123" or "Related to #123"
 ```
+
+## Changing the crossing list
+
+`database_files/bs_crossings_V02.xlsx` is the source of every other product, so a change to it carries
+obligations:
+
+1. **Log every changed cell**: row, column, old value, new value and the evidence. Release 1.2.1 lists its
+   changes in [BS_CROSSINGS_DATABASE.md](BS_CROSSINGS_DATABASE.md).
+2. **Keep the window columns on every row of a leg.** A leg is identified by `pass` and `SC direction`, never
+   by row order or by which cells are filled.
+3. **Regenerate what depends on it**, in this order: `scripts/build_hdf5_from_crossings.ipynb`, then
+   `scripts/render_passes_v2.ipynb` for the affected legs (list them in `ONLY_LEGS`), then
+   `scripts/remake_figure4.ipynb` and `scripts/remake_figure5.ipynb`. The affected legs' data-product
+   figures in `figs_data/` are drawn outside the repository from the *Wind* data and have to be redrawn too.
 
 ## Testing
 

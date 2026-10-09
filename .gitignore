@@ -47,6 +47,7 @@ scripts/*.py~
 data/
 *.cdf
 *.h5
+!database_files/Wind_bow_shock_database.h5
 *.nc
 *.dat
 *.txt~
@@ -61,11 +62,18 @@ data/
 # *.html
 Untitled*.ipynb
 
+# Backups written by the notebooks
+*.bak
+*.bak_*
+
 # OS
 .DS_Store
 .AppleDouble
 .LSOverride
 Thumbs.db
+
+# Machine-specific locations (template: scripts/local_paths.example.json)
+local_paths.json
 
 # Local environment file
 .env.local

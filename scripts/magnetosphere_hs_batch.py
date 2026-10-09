@@ -1511,7 +1511,7 @@ def run_time_sequence(
 
 if __name__ == "__main__":
 
-    hs_dir = "/home/kgklein/Codes/HS-RT/PhB_SRD5B_0x75b"
+    hs_dir = os.environ.get("HS_RT_DIR", "HS-RT/PhB_SRD5B_0x75b")   # set HS_RT_DIR to the HS-RT run folder
 
     load_spice_kernels(kernel_dir="data/spice")
     

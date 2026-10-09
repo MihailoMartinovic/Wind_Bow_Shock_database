@@ -7,7 +7,7 @@ This guide covers setup and development practices for Wind Bow Shock Database.
 ### 1. Clone and Initial Setup
 
 ```bash
-git clone https://github.com/yourusername/Wind_Bow_Shock_database.git
+git clone https://github.com/MihailoMartinovic/Wind_Bow_Shock_database.git
 cd Wind_Bow_Shock_database
 ```
 
@@ -35,7 +35,9 @@ pip install -r requirements.txt
 # Install development tools
 pip install pytest pytest-cov black flake8 jupyter jupyterlab
 
-# Update OMNI2 data (one-time)
+# Download spacepy's OMNI2 database (one-time). MagCarto_Master.ipynb reads it through spacepy.omni,
+# and scripts/build_omni2_cache.ipynb builds the renderings' OMNI2 cache from it
+# (~/.spacepy/data/omni2data.h5).
 python -c "import spacepy.toolbox as tb; tb.update(omni2=True)"
 ```
 
@@ -43,12 +45,39 @@ python -c "import spacepy.toolbox as tb; tb.update(omni2=True)"
 
 ```bash
 # Test imports
-python -c "import spacepy, geopack, sscws, cdflib, plotly; print('✓ All imports successful')"
+python -c "import pandas, openpyxl, tables, h5py, spacepy, geopack, sscws, cdflib, plotly; print('✓ All imports successful')"
 
 # Start Jupyter
 jupyter lab
-# Open MagCarto_Master.ipynb
+# Open MagCarto_Master.ipynb, or a notebook in scripts/
 ```
+
+## Paths and inputs
+
+The notebooks in `scripts/` and `MagCarto_Master.ipynb` read machine-specific locations from `local_paths.json`
+in the folder they run in. Copy `scripts/local_paths.example.json` to `local_paths.json` and fill it in;
+`.gitignore` keeps it out of the repository. Two inputs of the rendering are not in the repository:
+
+- the OMNI2 cache `omni2_cache.pkl`, written by `scripts/build_omni2_cache.ipynb`;
+- the *Wind* ephemeris `Wind_Ephemerids.h5`, key `/GSM2` (GSM positions at 10-minute cadence).
+
+The scripts `scripts/magnetosphere_hs_*.py` read the HS-RT run folder from the environment variable `HS_RT_DIR`.
+
+## Regenerating the data products
+
+After any change to `database_files/bs_crossings_V02.xlsx`, run in this order:
+
+1. `scripts/build_hdf5_from_crossings.ipynb` rewrites `database_files/Wind_bow_shock_database.h5` from the
+   list, keeping the previous file's key, columns and types.
+2. `scripts/render_passes_v2.ipynb` re-renders the affected legs: list them in `ONLY_LEGS` in the first code
+   cell. Only those legs' rows of `pass_parameters_v2.csv` change.
+3. `scripts/remake_figure4.ipynb`, then `scripts/remake_figure5.ipynb`.
+
+These notebooks never delete what they replace. They archive it in an `00_old_versions` folder beside the
+repository (path set in their first code cell), under rules described in that folder's README.
+
+A leg is a run of rows with the same `pass` and `SC direction`. Do not identify legs by row order or by
+which cells are filled.
 
 ## Code Style
 
@@ -219,32 +248,13 @@ Fixes #123
 Related to #456
 ```
 
-## Environment Variables
-
-For local development, create `.env.local`:
-
-```
-WIND_DATA_DIR=/path/to/wind/data
-CACHE_DIR=/path/to/cache
-DEBUG=True
-```
-
-Load with:
-
-```python
-from dotenv import load_dotenv
-import os
-
-load_dotenv('.env.local')
-wind_data_dir = os.getenv('WIND_DATA_DIR')
-```
-
 ## Documentation
 
-- **README.md**: User-facing documentation
+- **README.md**: User-facing documentation, including the table of releases
+- **BS_CROSSINGS_DATABASE.md**: The crossing list: columns, conventions and changes
 - **CONTRIBUTING.md**: Contribution guidelines
 - **DEVELOPMENT.md**: This file - development guide
-- **Notebook docstrings**: In-code documentation in the Jupyter notebook
+- **Notebook markdown**: Each notebook in `scripts/` states its inputs, outputs and expected results
 
 ### Building Documentation
 
@@ -272,19 +282,25 @@ make html
 
 1. Test with new version locally
 2. Update `requirements.txt` with new versions
-3. Test in CI/CD
-4. Document breaking changes in PR
+3. Document breaking changes in PR
 
 ### Creating a Release
 
+Tag the release commit itself, after it exists, and check where the tag points before pushing it. Zenodo
+archives the tagged commit.
+
 ```bash
-# Update version in setup.py or pyproject.toml
-# Update CHANGELOG
-# Create git tag
-git tag v1.0.0
-git push origin v1.0.0
-# Create release on GitHub
+git add -A
+git commit -m "Release vX.Y.Z: summary"
+git tag -a vX.Y.Z -m "vX.Y.Z: summary"      # only after the commit has succeeded
+git rev-list -n 1 vX.Y.Z                    # must print the release commit
+git log -1 --format=%H                      # ... which is this one
+git push origin main
+git push origin vX.Y.Z
+git ls-remote origin                        # main and the tag as GitHub sees them
 ```
+
+Then add the release to the table in README.md and create the release on GitHub from the tag.
 
 ## Performance Optimization
 
@@ -323,7 +339,7 @@ print(f"Time: {end - start:.4f} seconds")
 
 ```bash
 # Verify all dependencies installed
-pip list | grep -E "spacepy|geopack|sscws|cdflib"
+pip list | grep -E "pandas|openpyxl|tables|spacepy|geopack|sscws|cdflib"
 
 # Reinstall if needed
 pip install --force-reinstall spacepy
@@ -345,16 +361,15 @@ python -m ipykernel install --user --name venv-magnetosphere
 ```python
 import cdflib
 
-# Inspect CDF file
+# Inspect CDF file (recent cdflib versions have no close() method)
 file = cdflib.CDF('filename.cdf')
-print(file.variables)  # List variables
-print(file['VAR_NAME'][:])  # Read variable
-file.close()
+print(file.cdf_info())          # List variables
+print(file.varget('VAR_NAME'))  # Read variable
 ```
 
 ## Resources
 
-- [Wind Bow Shock Database GitHub](https://github.com/yourusername/Wind_Bow_Shock_database)
+- [Wind Bow Shock Database GitHub](https://github.com/MihailoMartinovic/Wind_Bow_Shock_database)
 - [spacepy Documentation](https://spacepy.github.io/)
 - [Jupyter Notebook Guide](https://jupyter-notebook.readthedocs.io/)
 - [git Documentation](https://git-scm.com/doc)
